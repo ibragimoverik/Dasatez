@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAT Sky — Practice Platform</title>
+<style>
+:root{
+  --bg:#eef9ff;--surface:#fff;--text:#10243a;--muted:#64788a;--primary:#45b9f7;
+  --primary-dark:#168fd1;--soft:#dff4ff;--line:#d9ebf4;--green:#16a66a;--red:#e95656;
+  --navy:#0d304b;--shadow:0 22px 65px rgba(28,126,180,.16)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(180deg,#effaff,#f9fdff);color:var(--text)}
+button,input{font:inherit}button{cursor:pointer}.container{width:min(1180px,calc(100% - 28px));margin:auto}
+header{position:sticky;top:0;z-index:20;background:rgba(239,250,255,.9);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:16px}.logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:20px}
+.logo-mark{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--primary),#8edcff);display:grid;place-items:center;color:white}
+.nav-actions{display:flex;gap:10px}.btn{border:0;border-radius:13px;padding:13px 18px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--primary-dark));color:#fff}
+.btn.secondary{background:#fff;color:var(--primary-dark);border:1px solid var(--primary)}.btn.ghost{background:transparent;color:var(--primary-dark);border:1px solid var(--line)}
+.hero{padding:76px 0 54px}.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.eyebrow{display:inline-block;padding:7px 11px;border-radius:999px;background:var(--soft);color:var(--primary-dark);font-size:12px;font-weight:900;text-transform:uppercase;letter-spacing:.08em}
+h1,h2,h3{line-height:1.08;margin-top:0}h1{font-size:clamp(42px,6vw,72px);letter-spacing:-.05em;margin:18px 0}h2{font-size:clamp(32px,4vw,48px);letter-spacing:-.04em}
+.hero p,.muted{color:var(--muted);line-height:1.7}.hero-card{background:#fff;border:1px solid var(--line);border-radius:28px;padding:28px;box-shadow:var(--shadow)}
+.metric{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}.metric:last-child{border-bottom:0}
+.metric strong{font-size:24px}.section{padding:80px 0}.section-head{display:flex;justify-content:space-between;gap:30px;align-items:end;margin-bottom:34px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 12px 34px rgba(30,110,150,.08)}
+.card-top{display:flex;justify-content:space-between;gap:12px}.tag{padding:6px 9px;border-radius:999px;background:var(--soft);color:var(--primary-dark);font-size:11px;font-weight:900}
+.card ul{padding-left:18px;color:var(--muted)}.card .btn{width:100%;margin-top:10px}.locked{opacity:.65}
+.platform{background:var(--navy);color:#fff}.platform p{color:#b9cfdb}.features{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.feature{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);padding:20px;border-radius:18px}
+footer{background:#08243a;color:#fff;padding:30px 0}.footer{display:flex;justify-content:space-between;gap:20px;align-items:center}.footer small{color:#a9c0ce}
+
+/* test app */
+#testApp{display:none;min-height:100vh;background:#f6fbfe}.test-header{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid var(--line)}
+.test-head-inner{min-height:72px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px}.test-title{font-weight:900}.timer{font-size:20px;font-weight:900;padding:10px 16px;background:var(--soft);border-radius:12px;color:var(--primary-dark)}
+.test-actions{display:flex;justify-content:flex-end;gap:8px}.test-layout{display:grid;grid-template-columns:1fr 280px;gap:22px;padding:26px 0}
+.question-panel,.side-panel{background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px}.question-meta{display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:13px}
+.passage{background:#f7fbfd;border-left:4px solid var(--primary);padding:18px;border-radius:12px;margin:20px 0;line-height:1.7}
+.question{font-size:21px;font-weight:800;line-height:1.5;margin:20px 0}.option{width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:7px 0;font-weight:700}
+.option.selected{border-color:var(--primary);background:var(--soft)}.option.correct{border-color:var(--green);background:#eafff4;color:var(--green)}.option.wrong{border-color:var(--red);background:#fff1f1;color:var(--red)}
+.nav-buttons{display:flex;justify-content:space-between;gap:12px;margin-top:24px}.q-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:16px}
+.q-btn{height:40px;border:1px solid var(--line);background:#fff;border-radius:10px;font-weight:900}.q-btn.current{background:var(--primary);color:#fff;border-color:var(--primary)}
+.q-btn.answered{background:var(--soft);color:var(--primary-dark)}.q-btn.flagged:after{content:"•";color:#f39b21;margin-left:2px}.side-section{margin-bottom:22px}
+.flag-btn{width:100%;border:1px solid var(--line);background:#fff;border-radius:12px;padding:12px;font-weight:800}.flag-btn.active{background:#fff7e7;border-color:#f1b04c}
+.progressbar{height:8px;background:#eaf2f6;border-radius:999px;overflow:hidden}.progressbar span{display:block;height:100%;background:var(--primary)}
+#resultScreen{display:none;padding:60px 0}.result-card{max-width:850px;margin:auto;background:#fff;border:1px solid var(--line);border-radius:28px;padding:30px;box-shadow:var(--shadow)}
+.score-big{text-align:center;font-size:68px;font-weight:900;color:var(--primary-dark)}.result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.result-stat{background:#f7fbfd;padding:18px;border-radius:16px;text-align:center}
+.review-item{border-top:1px solid var(--line);padding:18px 0}.review-item strong{display:block;margin-bottom:7px}.ok{color:var(--green)}.bad{color:var(--red)}
+@media(max-width:900px){.hero-grid,.test-layout{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.features{grid-template-columns:1fr 1fr}.side-panel{order:-1}.test-head-inner{grid-template-columns:1fr auto}.test-actions{grid-column:1/-1}.section-head{display:block}}
+@media(max-width:600px){.nav-actions .secondary{display:none}.features{grid-template-columns:1fr}.hero{padding-top:48px}.test-head-inner{grid-template-columns:1fr auto}.test-title{font-size:13px}.timer{font-size:16px}.question-panel,.side-panel{padding:18px}.q-grid{grid-template-columns:repeat(6,1fr)}.result-grid{grid-template-columns:1fr}.footer{display:block;text-align:center}}
+</style>
+</head>
+<body>
+<div id="site">
+<header>
+  <div class="container nav">
+    <div class="logo"><span class="logo-mark">S</span>SAT Sky</div>
+    <div class="nav-actions"><button class="btn secondary" onclick="document.querySelector('#catalog').scrollIntoView()">Пробники</button><button class="btn" onclick="startTest()">Начать демо</button></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">Digital SAT Practice</span>
+      <h1>Пробники, практика и разбор ошибок в одном месте</h1>
+      <p>Решай авторские SAT-style тесты, работай с таймером и отслеживай слабые темы. Прогресс сохраняется прямо на устройстве.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:26px">
+        <button class="btn" onclick="startTest()">Запустить бесплатный мок</button>
+        <button class="btn secondary" onclick="document.querySelector('#catalog').scrollIntoView()">Смотреть каталог</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h3>Демо-мок</h3>
+      <div class="metric"><span>Вопросов</span><strong>12</strong></div>
+      <div class="metric"><span>Разделы</span><strong>2</strong></div>
+      <div class="metric"><span>Время</span><strong>20 мин</strong></div>
+      <div class="metric"><span>Результат</span><strong id="savedScore">—</strong></div>
+    </div>
+  </div>
+</section>
+
+<section id="catalog" class="section">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Каталог</span><h2>Пробные тесты</h2></div>
+      <p class="muted">Первая версия платформы. Новые моки можно добавлять постепенно.</p>
+    </div>
+    <div class="grid">
+      <article class="card">
+        <div class="card-top"><span class="tag">Бесплатно</span><span>20 минут</span></div>
+        <h3>Diagnostic Mock 01</h3>
+        <p class="muted">12 авторских вопросов: Reading & Writing и Math.</p>
+        <ul><li>Таймер</li><li>Навигация по вопросам</li><li>Объяснения</li><li>Сохранение результата</li></ul>
+        <button class="btn" onclick="startTest()">Начать тест</button>
+      </article>
+      <article class="card locked">
+        <div class="card-top"><span class="tag">Скоро</span><span>64 минуты</span></div>
+        <h3>Reading & Writing Mock</h3>
+        <p class="muted">Полноценный тренировочный блок с двумя модулями.</p>
+        <ul><li>Grammar</li><li>Transitions</li><li>Vocabulary</li><li>Information & Ideas</li></ul>
+        <button class="btn ghost" disabled>В разработке</button>
+      </article>
+      <article class="card locked">
+        <div class="card-top"><span class="tag">Скоро</span><span>70 минут</span></div>
+        <h3>Math Mock</h3>
+        <p class="muted">Алгебра, Advanced Math, Geometry и Data Analysis.</p>
+        <ul><li>2 модуля</li><li>Калькуляторный формат</li><li>Подробные решения</li><li>Аналитика тем</li></ul>
+        <button class="btn ghost" disabled>В разработке</button>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section platform">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">Внутри платформы</span><h2>Всё необходимое для практики</h2></div></div>
+    <div class="features">
+      <div class="feature"><h3>⏱ Таймер</h3><p>Реалистичный режим прохождения.</p></div>
+      <div class="feature"><h3>🔖 Отметки</h3><p>Возвращайся к сложным вопросам.</p></div>
+      <div class="feature"><h3>📊 Результаты</h3><p>Точность и разбивка по разделам.</p></div>
+      <div class="feature"><h3>💡 Объяснения</h3><p>Разбор после завершения теста.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="container footer"><div class="logo"><span class="logo-mark">S</span>SAT Sky</div><small>Авторские SAT-style материалы. Не является официальным продуктом College Board.</small></div></footer>
+</div>
+
+<div id="testApp">
+  <div class="test-header">
+    <div class="container test-head-inner">
+      <div class="test-title">Diagnostic Mock 01</div>
+      <div class="timer" id="timer">20:00</div>
+      <div class="test-actions"><button class="btn ghost" onclick="saveAndExit()">Сохранить и выйти</button><button class="btn" onclick="finishTest()">Завершить</button></div>
+    </div>
+  </div>
+  <div class="container test-layout">
+    <main class="question-panel">
+      <div class="question-meta"><span id="sectionName"></span><span id="qCount"></span></div>
+      <div id="passage" class="passage"></div>
+      <div id="question" class="question"></div>
+      <div id="options"></div>
+      <div class="nav-buttons"><button class="btn secondary" onclick="prevQ()">Назад</button><button class="btn" onclick="nextQ()">Далее</button></div>
+    </main>
+    <aside class="side-panel">
+      <div class="side-section"><strong>Прогресс</strong><div class="progressbar" style="margin-top:10px"><span id="progressFill"></span></div></div>
+      <div class="side-section"><button id="flagBtn" class="flag-btn" onclick="toggleFlag()">☆ Отметить вопрос</button></div>
+      <div class="side-section"><strong>Вопросы</strong><div id="qGrid" class="q-grid"></div></div>
+    </aside>
+  </div>
+</div>
+
+<div id="resultScreen">
+  <div class="container">
+    <div class="result-card">
+      <span class="eyebrow">Результат</span>
+      <div class="score-big" id="scoreBig"></div>
+      <div class="result-grid">
+        <div class="result-stat"><strong id="correctStat"></strong><br><span class="muted">Правильно</span></div>
+        <div class="result-stat"><strong id="rwStat"></strong><br><span class="muted">Reading & Writing</span></div>
+        <div class="result-stat"><strong id="mathStat"></strong><br><span class="muted">Math</span></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:24px 0">
+        <button class="btn" onclick="restartTest()">Пройти заново</button>
+        <button class="btn secondary" onclick="backHome()">На главную</button>
+      </div>
+      <h3>Разбор ответов</h3>
+      <div id="review"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions=[
+{section:"Reading & Writing",passage:"The city library extended its weekend hours. Attendance increased by 18 percent during the first month, especially among high school students preparing for exams.",q:"Which choice best states the main idea of the text?",options:["The library reduced weekday services.","Longer weekend hours were followed by higher attendance.","Most visitors disliked the new schedule.","Only high school students use the library."],answer:1,explain:"The text directly connects extended weekend hours with an 18% attendance increase."},
+{section:"Reading & Writing",passage:"Although the experiment was small, its results were remarkably consistent across all three trials.",q:"Which transition best fits the sentence?",options:["Therefore","However","For example","Similarly"],answer:1,explain:"“Although” introduces a contrast between the experiment's small size and the consistency of its results."},
+{section:"Reading & Writing",passage:"The researchers collected samples from five locations, analyzed the data, and ____ their findings in a public report.",q:"Which choice completes the text so that it conforms to Standard English?",options:["publishes","published","publishing","has publish"],answer:1,explain:"The verbs are in a parallel past-tense sequence: collected, analyzed, and published."},
+{section:"Reading & Writing",passage:"The word “robust” in a scientific context often describes a result that remains reliable under different conditions.",q:"As used in the text, “robust” most nearly means",options:["fragile","complicated","reliable","unexpected"],answer:2,explain:"The sentence itself defines robust as remaining reliable under varying conditions."},
+{section:"Reading & Writing",passage:"Solar panels have become less expensive over the last decade. ____ more households can now consider installing them.",q:"Which choice best completes the text with the most logical transition?",options:["Nevertheless,","As a result,","In contrast,","Meanwhile,"],answer:1,explain:"Lower prices logically lead to more households being able to consider installation."},
+{section:"Reading & Writing",passage:"Maya reviewed the survey responses twice ____ she wanted to ensure that no data had been entered incorrectly.",q:"Which choice completes the text so that it conforms to Standard English?",options:["because","because,","; because",", because"],answer:0,explain:"No comma is needed before a dependent because-clause that is essential to the sentence's meaning."},
+{section:"Math",passage:"",q:"If 3x + 5 = 20, what is the value of x?",options:["3","5","7","15"],answer:1,explain:"Subtract 5: 3x = 15. Divide by 3: x = 5."},
+{section:"Math",passage:"",q:"A line has slope 4 and passes through (2, 3). Which equation represents the line?",options:["y = 4x - 5","y = 4x + 5","y = 2x - 1","y = 3x + 4"],answer:0,explain:"Using y−3=4(x−2), simplify to y=4x−5."},
+{section:"Math",passage:"",q:"A jacket originally costs $80 and is discounted by 25%. What is the sale price?",options:["$20","$55","$60","$65"],answer:2,explain:"25% of 80 is 20, so the sale price is 80−20=60."},
+{section:"Math",passage:"",q:"Which expression is equivalent to x² − 9?",options:["(x−9)(x+1)","(x−3)(x+3)","(x−3)²","(x+9)(x−1)"],answer:1,explain:"This is a difference of squares: x²−3²=(x−3)(x+3)."},
+{section:"Math",passage:"",q:"The mean of 6, 8, 10, and x is 9. What is x?",options:["9","10","11","12"],answer:3,explain:"A mean of 9 across four values gives a total of 36. Since 6+8+10=24, x=12."},
+{section:"Math",passage:"",q:"A circle has radius 5. What is its area?",options:["10π","20π","25π","50π"],answer:2,explain:"Area = πr² = π(5²) = 25π."}
+];
+
+let state={index:0,answers:Array(questions.length).fill(null),flags:Array(questions.length).fill(false),seconds:1200};
+let timerId=null;
+
+function loadSaved(){
+  const s=localStorage.getItem("satSkyState");
+  if(s){try{state=JSON.parse(s)}catch(e){}}
+  const last=localStorage.getItem("satSkyLastScore");
+  if(last) document.getElementById("savedScore").textContent=last+"%";
+}
+loadSaved();
+
+function startTest(){
+  document.getElementById("site").style.display="none";
+  document.getElementById("resultScreen").style.display="none";
+  document.getElementById("testApp").style.display="block";
+  render();startTimer();
+}
+function startTimer(){
+  clearInterval(timerId);updateTimer();
+  timerId=setInterval(()=>{state.seconds--;updateTimer();saveState();if(state.seconds<=0){clearInterval(timerId);finishTest()}},1000)
+}
+function updateTimer(){
+  let m=Math.floor(state.seconds/60),s=state.seconds%60;
+  document.getElementById("timer").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+}
+function render(){
+  const q=questions[state.index];
+  document.getElementById("sectionName").textContent=q.section;
+  document.getElementById("qCount").textContent=`Вопрос ${state.index+1} из ${questions.length}`;
+  const p=document.getElementById("passage");p.textContent=q.passage;p.style.display=q.passage?"block":"none";
+  document.getElementById("question").textContent=q.q;
+  const opts=document.getElementById("options");opts.innerHTML="";
+  q.options.forEach((o,i)=>{const b=document.createElement("button");b.className="option"+(state.answers[state.index]===i?" selected":"");b.textContent=String.fromCharCode(65+i)+". "+o;b.onclick=()=>{state.answers[state.index]=i;saveState();render()};opts.appendChild(b)});
+  document.getElementById("progressFill").style.width=((state.index+1)/questions.length*100)+"%";
+  const flag=document.getElementById("flagBtn");flag.className="flag-btn"+(state.flags[state.index]?" active":"");flag.textContent=state.flags[state.index]?"★ Отмечено":"☆ Отметить вопрос";
+  const grid=document.getElementById("qGrid");grid.innerHTML="";
+  questions.forEach((_,i)=>{const b=document.createElement("button");b.className="q-btn"+(i===state.index?" current":"")+(state.answers[i]!==null?" answered":"")+(state.flags[i]?" flagged":"");b.textContent=i+1;b.onclick=()=>{state.index=i;render()};grid.appendChild(b)});
+}
+function nextQ(){if(state.index<questions.length-1){state.index++;render()}else finishTest()}
+function prevQ(){if(state.index>0){state.index--;render()}}
+function toggleFlag(){state.flags[state.index]=!state.flags[state.index];saveState();render()}
+function saveState(){localStorage.setItem("satSkyState",JSON.stringify(state))}
+function saveAndExit(){saveState();clearInterval(timerId);document.getElementById("testApp").style.display="none";document.getElementById("site").style.display="block";window.scrollTo(0,0)}
+function finishTest(){
+  clearInterval(timerId);
+  let correct=0,rwC=0,rwT=0,mC=0,mT=0;
+  questions.forEach((q,i)=>{const ok=state.answers[i]===q.answer;if(ok)correct++;if(q.section==="Math"){mT++;if(ok)mC++}else{rwT++;if(ok)rwC++}});
+  const pct=Math.round(correct/questions.length*100);
+  localStorage.setItem("satSkyLastScore",pct);localStorage.removeItem("satSkyState");
+  document.getElementById("testApp").style.display="none";document.getElementById("resultScreen").style.display="block";
+  document.getElementById("scoreBig").textContent=pct+"%";
+  document.getElementById("correctStat").textContent=`${correct}/${questions.length}`;
+  document.getElementById("rwStat").textContent=`${rwC}/${rwT}`;
+  document.getElementById("mathStat").textContent=`${mC}/${mT}`;
+  const review=document.getElementById("review");review.innerHTML="";
+  questions.forEach((q,i)=>{const ok=state.answers[i]===q.answer;const d=document.createElement("div");d.className="review-item";d.innerHTML=`<strong>Вопрос ${i+1}: <span class="${ok?'ok':'bad'}">${ok?'верно':'ошибка'}</span></strong><div class="muted">Правильный ответ: ${String.fromCharCode(65+q.answer)}. ${q.options[q.answer]}</div><p>${q.explain}</p>`;review.appendChild(d)});
+  window.scrollTo(0,0)
+}
+function restartTest(){state={index:0,answers:Array(questions.length).fill(null),flags:Array(questions.length).fill(false),seconds:1200};startTest()}
+function backHome(){document.getElementById("resultScreen").style.display="none";document.getElementById("site").style.display="block";loadSaved();window.scrollTo(0,0)}
+</script>
+</body>
+</html>
